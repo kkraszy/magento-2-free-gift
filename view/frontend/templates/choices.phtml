@@ -1,0 +1,91 @@
+<?php
+/**
+ * "Choose your free gift" - only for rules with more than one gift SKU (a
+ * single SKU is added automatically). Theme-neutral `kk-` classes, styled
+ * below, because Tailwind does not scan module templates.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+$choices = $block->getData('gifts')->choices();
+if (!$choices) {
+    return;
+}
+/** @var \Magento\Catalog\Helper\Image $image */
+$image = $this->helper(\Magento\Catalog\Helper\Image::class);
+$formKey = $block->getBlockHtml('formkey');
+$action = $block->getUrl('kkfreegift/cart/add');
+?>
+<?php foreach ($choices as $choice): ?>
+<section class="kk-gift" aria-labelledby="kk-gift-<?= (int)$choice['rule'] ?>">
+    <h2 class="kk-gift__title" id="kk-gift-<?= (int)$choice['rule'] ?>">
+        <?= $escaper->escapeHtml($choice['left'] > 1
+            ? __('Choose %1 free gifts', (int)$choice['left'])
+            : __('Choose your free gift')) ?>
+    </h2>
+    <ul class="kk-gift__list">
+        <?php foreach ($choice['products'] as $product): ?>
+        <li class="kk-gift__item">
+            <img src="<?= $escaper->escapeUrl($image->init($product, 'product_thumbnail_image')->getUrl()) ?>"
+                 alt="" width="64" height="64" loading="lazy">
+            <span class="kk-gift__name"><?= $escaper->escapeHtml($product->getName()) ?></span>
+            <form method="post" action="<?= $escaper->escapeUrl($action) ?>">
+                <?= /* @noEscape */ $formKey ?>
+                <input type="hidden" name="rule" value="<?= (int)$choice['rule'] ?>">
+                <input type="hidden" name="sku" value="<?= $escaper->escapeHtmlAttr($product->getSku()) ?>">
+                <button type="submit" class="kk-gift__add"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Add %1 as a gift', $product->getName())) ?>">
+                    <?= $escaper->escapeHtml(__('Add')) ?>
+                </button>
+            </form>
+        </li>
+        <?php endforeach ?>
+    </ul>
+</section>
+<?php endforeach ?>
+<style>
+    /* em, not rem: Luma's root font-size is 10px, Hyvä's 16px */
+    .kk-gift {
+        --kk-gift-accent: var(--color-primary, #111);
+        margin: 0 0 1.5em;
+        padding: 1em;
+        border: 1px dashed color-mix(in srgb, var(--kk-gift-accent) 45%, transparent);
+        border-radius: .9em;
+        background: color-mix(in srgb, var(--kk-gift-accent) 5%, transparent);
+    }
+    .kk-gift__title { margin: 0 0 .75em; font-size: 1.05em; font-weight: 600; }
+    .kk-gift__list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 15em), 1fr));
+        gap: .6em;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .kk-gift__item {
+        display: flex;
+        align-items: center;
+        gap: .75em;
+        min-width: 0;
+        padding: .5em;
+        border-radius: .6em;
+        background: var(--color-bg, #fff);
+    }
+    .kk-gift__item img { flex: none; width: 3.5em; height: 3.5em; object-fit: contain; }
+    .kk-gift__name { flex: 1; min-width: 0; font-size: .9em; line-height: 1.3; }
+    .kk-gift__add {
+        flex: none;
+        padding: .45em .9em;
+        border: 0;
+        border-radius: 99em;
+        background: var(--kk-gift-accent);
+        color: var(--color-on-primary, #fff);
+        font: inherit;
+        font-size: .85em;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .kk-gift__add:hover { filter: brightness(1.12); }
+    .kk-gift__add:focus-visible { outline: 2px solid var(--kk-gift-accent); outline-offset: 2px; }
+</style>

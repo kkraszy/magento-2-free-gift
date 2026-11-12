@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="actions">
+        <field name="kk_gift_skus" formElement="input" sortOrder="15">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">sales_rule</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Free Gift SKUs</label>
+                <notice translate="true">Used with Apply = "Add free gift". Comma-separated simple product SKUs. One SKU is added automatically; with several the customer chooses in the cart. Discount Amount = number of gifts (min. 1).</notice>
+                <dataScope>kk_gift_skus</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+</form>
